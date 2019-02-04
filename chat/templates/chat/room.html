@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+</head>
+<body>
+<div id="app">
+  </div>
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+    <input id="chat-message-input" type="text" size="100"/><br/>
+    <input id="chat-message-submit" type="button" value="Send"/>
+
+    <p>Users</p>
+    <textarea id="users"></textarea>
+</body>
+<script>
+    var roomUid = "{{ room_uid }}";
+    var user = {{ user|safe }}
+
+    var chatSocket;
+
+    var interval, retryInterval;
+
+    function connect() {
+      chatSocket = new WebSocket(
+          'ws://' + window.location.host +
+          '/ws/chat/' + roomUid + '/');
+
+      chatSocket.onopen = function(e) {
+        if (retryInterval) {
+          window.clearInterval(retryInterval)
+        }
+        interval = setInterval(function() {
+          if (chatSocket.readyState === 1) {
+            chatSocket.send(JSON.stringify({type: 'heartbeat'}));
+          } else {
+            window.clearInterval(interval)
+            interval = null
+          }
+        }, 30000);
+      }
+
+      chatSocket.onmessage = function(e) {
+          var data = JSON.parse(e.data);
+          
+          if (data.messages) {
+            data.messages.forEach((m) =>{
+              document.querySelector('#chat-log').value += `${m.username} @ ${m.timestamp}: ${m.message}\n`;
+            })
+          }
+          if (data.userlist) {
+            document.querySelector('#users').value = ''
+            data.userlist.forEach((u) =>{
+              document.querySelector('#users').value += `${u.username} (${u.country})`;
+            })
+          }
+      };
+
+      chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+        window.clearInterval(interval)
+        interval = null
+        retryInterval = window.setInterval(connect, 1000)
+      };
+    }
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input');
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+
+        messageInputDom.value = '';
+    };
+    connect()
+</script>
+</html>

@@ -1,0 +1,17 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/mixins";
+
+/* Overwrite variables here */
+
+$blue:    #0069d0 !default;
+$red:     #ff002a !default;
+$black:   #112233 !default;
+$highlight-yellow:  #FFFC78 !default;
+
+$gray-100: #f1f1f1 !default;
+$gray-200: #d0d0d0 !default;
+$gray-500: #687683 !default;
+
+$navbar-light-color: $black !default;
+
+@import "~bootstrap/scss/variables";

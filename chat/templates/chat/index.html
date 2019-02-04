@@ -1,0 +1,17 @@
+{% load static %}<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+  {% csrf_token %}
+  <div id="app"
+    :session="{{ session }}"
+    :room="{{ room }}"
+    :countries="{{ countries }}"
+    >
+  </div>
+  <script src="{% static 'app.js' %}"></script>
+</body>
+</html>
