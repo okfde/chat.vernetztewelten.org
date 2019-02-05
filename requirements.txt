@@ -4,3 +4,7 @@ channels_redis
 django-countries
 djangorestframework
 emoji
+uvicorn
+gunicorn
+dj-database-url
+whitenoise
