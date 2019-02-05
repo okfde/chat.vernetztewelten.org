@@ -1,0 +1,1 @@
+web: PYTHONUNBUFFERED=true uvicorn smile.asgi:application --log-level info
