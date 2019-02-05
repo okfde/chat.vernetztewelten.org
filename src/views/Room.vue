@@ -131,8 +131,12 @@ export default class Room extends Vue {
     return unsortedMessages.sort(byTimestamp);
   }
   public createSocket() {
+    let prot = 'ws';
+    if (document.location.protocol === 'https:') {
+      prot = 'wss';
+    }
     return new WebSocket(
-      `ws://${window.location.host}/ws/chat/${this.roomUid}/`);
+      `${prot}://${window.location.host}/ws/chat/${this.roomUid}/`);
   }
   public sendMessage(message: string) {
     if (this.socket === null) {
