@@ -14,10 +14,10 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import router from '../router';
 
-import User from '../types'
+import {Session} from '../types';
 
 @Component
 export default class UserList extends Vue {
-  @Prop(Array) users!: Array<User>;
+  @Prop(Array) public users!: Session[];
 }
 </script>

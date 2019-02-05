@@ -31,21 +31,23 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import router from '../router';
 
+import {Room, Session} from '../types';
+
 @Component
 export default class Login extends Vue {
-  @Prop({type: Object, default: null}) private session: object | null | undefined;
-  @Prop({type: Object, default: null}) private room: object | null | undefined;
-  @Prop(Array) private countries!: Array<Array<string>>;
-  username = ''
-  roomName = ''
-  country = ''
-  error = ''
+  @Prop({type: Object, default: null}) private session: Session | null;
+  @Prop({type: Object, default: null}) private room: Room | null;
+  @Prop(Array) private countries!: string[][];
+  private username = '';
+  private roomName = '';
+  private country = '';
+  private error = '';
 
-  mounted() {
-    if(this.room !== null) {
+  public mounted() {
+    if (this.room !== null) {
       this.roomName = this.room.name;
     }
-    if(this.session !== null) {
+    if (this.session !== null) {
       this.username = this.session.username;
       this.country = this.session.country;
     }
@@ -58,9 +60,10 @@ export default class Login extends Vue {
     }
     return '';
   }
-  enterRoom(e: Event) {
+
+  private enterRoom(e: Event) {
     e.preventDefault();
-    this.error = ''
+    this.error = '';
     window.fetch('/enter/', {
       method: 'POST',
       credentials: 'same-origin',
@@ -73,7 +76,7 @@ export default class Login extends Vue {
         username: this.username,
         room: this.roomName,
         country: this.country,
-      })
+      }),
     }).then((response) => response.json())
     .then((data) => {
       if (data.error) {
@@ -81,7 +84,7 @@ export default class Login extends Vue {
         this.error = data.message;
       }
       router.replace(data.room);
-    })
+    });
   }
 }
 </script>

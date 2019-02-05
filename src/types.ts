@@ -1,3 +1,9 @@
+interface Room {
+  uid: string;
+  name: string;
+  created: Date;
+}
+
 interface Message {
   id: number;
   username: string;
@@ -5,19 +11,30 @@ interface Message {
   timestamp: Date;
 }
 
-interface DictionaryEntry {
+interface EntrySubmission {
   word: string;
   meaning: string;
+}
+
+interface DictionaryEntry extends EntrySubmission {
+  id: number;
   country: string;
 }
 
-interface User {
+interface Session {
   username: string;
   country: string;
 }
 
+interface UserChanged extends Session {
+  action: string;
+}
+
 export {
   Message,
+  EntrySubmission,
   DictionaryEntry,
-  User,
+  Session,
+  Room,
+  UserChanged,
 };

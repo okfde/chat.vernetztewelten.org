@@ -16,17 +16,15 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import router from '../router';
-
-import Message from '../types';
+import {Message} from '../types';
 
 @Component
 export default class Userlist extends Vue {
-  @Prop(Array) messages!: Array<Message>;
-  message = '';
+  @Prop(Array) public messages!: Message[];
+  private message = '';
 
-  submitMessage () {
-    this.$emit('sendmessage', this.message)
+  private submitMessage() {
+    this.$emit('sendmessage', this.message);
     this.message = '';
   }
 }
