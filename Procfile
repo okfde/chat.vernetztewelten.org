@@ -1,1 +1,1 @@
-web: PYTHONUNBUFFERED=true uvicorn smile.asgi:application --log-level info --port $PORT
+web: PYTHONUNBUFFERED=true uvicorn smile.asgi:application --log-level debug --port $PORT --host 0.0.0.0
