@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+import dj_database_url
+
+
+def env(key, default=''):
+    return os.environ.get(key, default)
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,12 +27,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_n*pyr4$@@ch!q!jzho5=hb@g3tp01k7&6pq=3)^g5n+(5pg^-'
+SECRET_KEY = env('SECRET_KEY', 'secret')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    env('ALLOWED_HOST', '*')
+]
 
 
 # Application definition
@@ -48,6 +57,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,6 +83,8 @@ TEMPLATES = [
         },
     },
 ]
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
 
 WSGI_APPLICATION = 'smile.wsgi.application'
 
@@ -82,7 +94,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [env('REDIS_URL', ('127.0.0.1', 6379))],
         },
     },
 }
@@ -91,14 +103,19 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'TEST': {
-            'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3')
-        }
-    }
+    'default': dj_database_url.config(env='DATABASE_URL',
+            default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'))
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'TEST': {
+#             'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3')
+#         }
+#     }
+# }
 
 
 # Password validation
@@ -137,11 +154,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "public")
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = '/static/'
-STATIC_URL = 'http://localhost:8080/static/'
+if DEBUG:
+    STATIC_URL = 'http://localhost:8080/static/'
+
 
 COUNTRIES_FIRST = ['DE']
