@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from dictionary.serializers import DictionarySerializer
+
 from .models import Message
 
 
@@ -22,4 +24,6 @@ class RoomSerializer(serializers.Serializer):
     userlist = serializers.ListField(
         child=UserSerializer()
     )
-    # dictionary
+    dictionary = serializers.ListField(
+        child=DictionarySerializer()
+    )

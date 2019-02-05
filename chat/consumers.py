@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .api import (
     get_room, get_room_info, update_presence, remove_presence,
-    add_message, get_userlist
+    add_message, get_userlist, add_dictionary_entry
 )
 
 
@@ -95,11 +95,24 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
 
-    # Receive message from room group
+        if content['type'] == 'dictionary_entry':
+            dictionary = await add_dictionary_entry(
+                self.room,
+                self.user['country'],
+                content['entry'].get('word', ''),
+                content['entry'].get('meaning', ''),
+            )
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'dictionary_entry',
+                    'dictionary': dictionary,
+                }
+            )
+
     async def chat_message(self, event):
         message = event['message']
 
-        # Send message to WebSocket
         await self.send_json({
             'messages': [message]
         })
@@ -108,4 +121,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'userlist': event['userlist'],
             'user': event['user']
+        })
+
+    async def dictionary_entry(self, event):
+        await self.send_json({
+            'dictionary': event['dictionary']
         })

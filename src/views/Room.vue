@@ -15,19 +15,36 @@
       @sendmessage="sendMessage"
     ></message-list>
 
+    <dictionary :dictionary="dictionary"
+      @addentry="addDictionaryEntry"
+    ></dictionary>
+
   </div>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import UserList from '../components/UserList.vue';
 import MessageList from '../components/MessageList.vue';
+import Dictionary from '../components/Dictionary.vue';
 
-import {Message, User, DictionaryEntry} from '../types';
+import {
+  Message, Session, DictionaryEntry, UserChanged,
+  EntrySubmission,
+} from '../types';
 
-const byTimestamp = (a, b) => {
+interface WebSocketUpdate {
+  messages: Message[] | undefined;
+  name: string | undefined;
+  userlist: Session[] | undefined;
+  user: UserChanged | undefined;
+  you: Session | undefined;
+  dictionary: DictionaryEntry[] | undefined;
+}
+
+const byTimestamp = (a: Message, b: Message) => {
   if (a.timestamp > b.timestamp) { return 1; }
   if (a.timestamp < b.timestamp) { return -1; }
   return 0;
@@ -37,45 +54,42 @@ const byTimestamp = (a, b) => {
   components: {
     UserList,
     MessageList,
-  },
-  props: {
-    roomUid: {
-      type: String,
-    }
+    Dictionary,
   },
 })
 export default class Room extends Vue {
-  socket: WebSocket | null = null;
-  messages: Message[] = [];
-  users: User[] = [];
-  dictionary: DictionaryEntry[] = [];
-  roomName: string|null = null;
-  session: object|null = null;
-  private heartBeatInterval: number|null = null;
-  private retryInterval: number|null = null;
+  @Prop(String) public roomUid!: string;
+  private socket: WebSocket | null = null;
+  private messages: Message[] = [];
+  private users: Session[] = [];
+  private dictionary: DictionaryEntry[] = [];
+  private roomName: string|null = null;
+  private session: object|null = null;
+  private heartBeatInterval: number|undefined = undefined;
+  private retryInterval: number|undefined = undefined;
 
-  mounted() {
+  public mounted() {
     this.connectSocket();
   }
-  connectSocket() {
+  public connectSocket() {
     this.socket = this.createSocket();
     if (this.retryInterval) {
       window.clearInterval(this.retryInterval);
-      this.retryInterval = null;
+      this.retryInterval = undefined;
     }
     this.socket.onopen = (e) => {
       this.heartBeatInterval = setInterval(() => {
-        if (this.socket.readyState === 1) {
+        if (this.socket && this.socket.readyState === 1) {
           this.socket.send(JSON.stringify({type: 'heartbeat'}));
         } else {
           window.clearInterval(this.heartBeatInterval);
-          this.heartBeatInterval = null;
+          this.heartBeatInterval = undefined;
         }
       }, 30000);
     };
 
     this.socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
+      const data = JSON.parse(e.data) as WebSocketUpdate;
 
       if (data.messages) {
         this.messages = this.mergeMessages(data.messages);
@@ -85,6 +99,9 @@ export default class Room extends Vue {
       }
       if (data.you) {
         this.session = data.you;
+      }
+      if (data.dictionary) {
+        this.dictionary = data.dictionary;
       }
       if (data.user) {
         console.log(`${data.user.username} ${data.user.action}`);
@@ -97,14 +114,14 @@ export default class Room extends Vue {
     this.socket.onclose = (e) => {
       console.error('Chat socket closed unexpectedly');
       window.clearInterval(this.heartBeatInterval);
-      this.heartBeatInterval = null;
-      if (this.retryInterval === null) {
+      this.heartBeatInterval = undefined;
+      if (this.retryInterval === undefined) {
         this.retryInterval = window.setInterval(this.connectSocket, 3000);
       }
     };
   }
-  public mergeMessages(newMessages) {
-    const messageMap = {};
+  public mergeMessages(newMessages: Message[]) {
+    const messageMap: {[key: number]: boolean} = {};
     this.messages.forEach((m) => messageMap[m.id] = true);
     const reallyNewMessages = newMessages.filter((m) => messageMap[m.id] === undefined);
     const unsortedMessages = [
@@ -113,11 +130,11 @@ export default class Room extends Vue {
     ];
     return unsortedMessages.sort(byTimestamp);
   }
-  public createSocket () {
+  public createSocket() {
     return new WebSocket(
       `ws://${window.location.host}/ws/chat/${this.roomUid}/`);
   }
-  public sendMessage(message) {
+  public sendMessage(message: string) {
     if (this.socket === null) {
       this.connectSocket();
     }
@@ -125,7 +142,19 @@ export default class Room extends Vue {
       this.socket.send(
         JSON.stringify({
           type: 'message',
-          message: message,
+          message,
+        }));
+    }
+  }
+  public addDictionaryEntry(entry: EntrySubmission) {
+    if (this.socket === null) {
+      this.connectSocket();
+    }
+    if (this.socket !== null) {
+      this.socket.send(
+        JSON.stringify({
+          type: 'dictionary_entry',
+          entry,
         }));
     }
   }

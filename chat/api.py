@@ -1,5 +1,9 @@
 from channels.db import database_sync_to_async
 
+from dictionary.models import Dictionary
+from dictionary.forms import DictionaryForm
+from dictionary.serializers import DictionarySerializer
+
 from .models import Room, Message, Presence
 from .serializers import RoomSerializer, MessageSerializer
 
@@ -21,7 +25,8 @@ def get_room_info(room_uid=None, room=None):
     return RoomSerializer({
         'name': room.name,
         'messages': messages,
-        'userlist': userlist
+        'userlist': userlist,
+        'dictionary': _get_dictionary(room)
     }).data
 
 
@@ -57,3 +62,24 @@ def add_message(username, room, message):
         message=message
     )
     return MessageSerializer(message).data
+
+
+@database_sync_to_async
+def add_dictionary_entry(room, country, word, meaning):
+    form = DictionaryForm(data={
+        'word': word,
+        'meaning': meaning,
+        'country': country
+    })
+    if form.is_valid():
+        form.save(room)
+    return DictionarySerializer(
+        _get_dictionary(room),
+        many=True
+    ).data
+
+
+def _get_dictionary(room):
+    return Dictionary.objects.filter(room=room).values(
+        'id', 'word', 'meaning', 'country'
+    )
