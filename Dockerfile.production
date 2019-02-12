@@ -1,0 +1,30 @@
+FROM node:11 as builder
+
+COPY package.json /home/node/app/
+COPY yarn.lock /home/node/app/
+
+WORKDIR /home/node/app
+
+RUN yarn install
+
+COPY tslint.json .
+COPY vue.config.js .
+COPY tsconfig.json .
+COPY babel.config.js .
+COPY src src
+RUN yarn run build
+
+FROM python:3.7.2
+RUN apt-get update && apt-get install -y build-essential python-dev
+COPY requirements-normal.txt /code/
+WORKDIR /code
+RUN pip install wheel && pip install -r requirements-normal.txt
+
+COPY . /code
+COPY --from=builder /home/node/app/static static
+
+ENV PYTHONPATH /code
+
+RUN python manage.py collectstatic
+
+CMD uvicorn smile.asgi:application --log-level info --host 0.0.0.0

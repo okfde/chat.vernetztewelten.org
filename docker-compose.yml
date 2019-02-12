@@ -1,7 +1,19 @@
 version: '3'
 
 services:
-  redis:
+  redis_db:
     image: redis:alpine
+  backend:
+    build:
+      context: "."
+      dockerfile: Dockerfile.production
+    env_file: ".env"
+    environment:
+      DEBUG: 0
+      REDIS_URL: redis://redis_db:6379
+    volumes:
+      - "./db.sqlite3:/code/db.sqlite3"
+    links:
+      - redis_db
     ports:
-      - "127.0.0.1:6379:6379"
+      - 127.0.0.1:8000:8000

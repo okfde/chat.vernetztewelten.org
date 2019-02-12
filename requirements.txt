@@ -1,11 +1,2 @@
-Django
-channels
-channels_redis
-django-countries
-djangorestframework
-emoji
-uvicorn
-gunicorn
-dj-database-url
-whitenoise
+-r requirements-normal.txt
 psycopg2-binary
