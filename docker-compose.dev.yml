@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  redis_db:
+    image: redis:alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+  frontend:
+    build:
+      context: "."
+      dockerfile: Dockerfile.frontend
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./src:/home/node/app/src
+      - ./static:/home/node/app/static
+    ports:
+      - "127.0.0.1:8080:8080"
+    command: "yarn run serve --host 0.0.0.0"
+  backend:
+    build:
+      context: "."
+      dockerfile: Dockerfile.backend
+    environment:
+      DEBUG: 1
+      REDIS_URL: redis://redis_db:6379
+    volumes:
+      - ".:/code/"
+    links:
+      - redis_db
+    ports:
+      - 127.0.0.1:8000:8000
+    command: "python manage.py runserver 0.0.0.0:8000"

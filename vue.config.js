@@ -1,5 +1,8 @@
 module.exports = {
   outputDir: 'static',
-  publicPath: '/static/',
-  filenameHashing: false
+  publicPath: '/static/js/',
+  filenameHashing: false,
+  devServer: {
+    public: 'localhost:8080'
+  }
 }
