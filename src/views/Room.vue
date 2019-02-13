@@ -1,24 +1,34 @@
 <template>
-  <div class="about">
-    <h1>
+  <div class="room">
+    <!-- <h1>
       Chat room
       <span v-if="roomName">
       „{{ roomName }}“
       </span>
-    </h1>
-    <span v-if="session">
-      Username: {{ session.username}} ({{ session.country }})
-    </span>
+    </h1> -->
 
-    <user-list :users="users"></user-list>
-    <message-list :messages="messages"
-      @sendmessage="sendMessage"
-    ></message-list>
-
-    <dictionary :dictionary="dictionary"
-      @addentry="addDictionaryEntry"
-    ></dictionary>
-
+    <div class="row">
+      <div class="col-sm-8">
+        <message-list :messages="messages"
+          :session="session"
+          @sendmessage="sendMessage"
+        ></message-list>
+      </div>
+      <div class="col-sm-4">
+        <div class="card border-warning bg-transparent mb-3" id="userlist">
+          <div class="card-header bg-transparent border-dark">
+            Raum:
+            <span v-if="roomName">
+            <strong>{{ roomName }}</strong>
+            </span>
+          </div>
+        </div>
+        <user-list :users="users" :session="session"></user-list>
+        <dictionary :dictionary="dictionary"
+          @addentry="addDictionaryEntry"
+        ></dictionary>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -40,7 +50,7 @@ interface WebSocketUpdate {
   name: string | undefined;
   userlist: Session[] | undefined;
   user: UserChanged | undefined;
-  you: Session | undefined;
+  session: Session | undefined;
   dictionary: DictionaryEntry[] | undefined;
 }
 
@@ -64,7 +74,7 @@ export default class Room extends Vue {
   private users: Session[] = [];
   private dictionary: DictionaryEntry[] = [];
   private roomName: string|null = null;
-  private session: object|null = null;
+  private session: Session|null = null;
   private heartBeatInterval: number|undefined = undefined;
   private retryInterval: number|undefined = undefined;
 
@@ -97,8 +107,8 @@ export default class Room extends Vue {
       if (data.userlist) {
         this.users = data.userlist;
       }
-      if (data.you) {
-        this.session = data.you;
+      if (data.session) {
+        this.session = data.session;
       }
       if (data.dictionary) {
         this.dictionary = data.dictionary;

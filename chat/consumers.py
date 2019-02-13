@@ -44,7 +44,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.send_userlist(userlist)
 
         room_info = await get_room_info(room=self.room)
-        room_info['you'] = self.user
+        room_info['session'] = self.user
         await self.send_json(room_info)
 
     async def send_userlist(self, userlist, action='joined'):

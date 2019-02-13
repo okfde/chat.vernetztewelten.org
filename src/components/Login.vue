@@ -1,28 +1,30 @@
 <template>
   <div class="login">
-    <h3>Login</h3>
+    <h3>Betrete einen Raum</h3>
     <div v-if="error" class="alert alert-danger">
       {{ error }}
     </div>
     <form action="/enter" method="post" @submit="enterRoom">
-    <p>
-      <label for="id_room">Room:</label>
-      <input v-model="roomName" type="text" name="room" required="" id="id_room">
-    </p>
-    <p>
-      <label for="id_username">Username:</label>
-      <input v-model="username" type="text" name="username" maxlength="255" required="" id="id_username">
-    </p>
-    <p>
-      <label for="id_country">Country:</label>
-      <select v-model="country" name="country" required="" id="id_country">
-        <option v-for="countryLabel in countries" :key="countryLabel[0]" :value="countryLabel[0]">
-          {{ countryLabel[1] }}
-        </option>
-      </select>
-    </p>
-    <button type="submit">Eintreten</button>
-  </form>
+      <div class="form-group">
+        <label for="id_room">Raum:</label>
+        <input v-model="roomName" type="text" name="room" required=""  maxlength="255" id="id_room" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="id_username">Dein Nutzername:</label>
+        <input v-model="username" type="text" name="username" maxlength="255" required="" id="id_username" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="id_country">Dein Land:</label>
+        <select v-model="country" name="country" required="" id="id_country" class="form-control">
+          <option v-for="countryLabel in countries" :key="countryLabel[0]" :value="countryLabel[0]">
+            {{ countryLabel[1] }}
+          </option>
+        </select>
+      </div>
+      <p class="text-right">
+        <button class="btn btn-primary" type="submit">Eintreten</button>
+      </p>
+    </form>
   </div>
 </template>
 

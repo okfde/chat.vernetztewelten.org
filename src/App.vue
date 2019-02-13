@@ -1,20 +1,12 @@
 <template>
-  <div id="app">
-    <div class="container">
-      <div class="row">
-        <div class="col-4">
-          Logo
-        </div>
-        <div class="col-8">
-          Navigation
-        </div>
-      </div>
+  <div id="app" class="blackspot">
+    <div class="container-fluid p-5">
+      <router-view
+        :session="session"
+        :room="room"
+        :countries="countries"
+      />
     </div>
-    <router-view
-      :session="session"
-      :room="room"
-      :countries="countries"
-    />
   </div>
 </template>
 
@@ -42,4 +34,8 @@ export default class App extends Vue {
 
 <style lang="scss">
 @import "styles/base.scss";
+
+#app {
+  height: 100vh;
+}
 </style>

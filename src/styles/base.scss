@@ -32,3 +32,99 @@
 
 @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 100;
+  background-color: #F8F8F6;
+}
+ 
+a {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 800;
+  color: #111;
+}
+
+a:hover {
+  color: #111;
+}
+
+h1, .h1 {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 7.5vw;
+  line-height: 1.75;
+  font-weight: 800;
+}
+
+h2, .h2 {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 2.5vh;
+  line-height: 1;
+  font-weight: 800;
+}
+
+h3, .h3 {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 2.5vh;
+  line-height: 1;
+  font-weight: 100;
+}
+
+h5, .h5 {
+  font-family: 'Roboto Condensed', sans-serif;
+  line-height: 1;
+  color: rgb(183, 178, 192);
+}
+
+nav-link, .nav-link {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 800;
+}
+
+/*! --- */
+
+.big {
+  font-size: 7.5vw;
+  line-height: 1.1;
+  font-weight: 700;
+  color: black;
+}
+
+.logotype {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: black;
+}
+
+.my-primary {
+  color: black;
+  background-color: #a0c814;
+}
+
+.my-primary:focus, .my-primary:hover {
+  color: white;
+  background-color: #374105;
+}
+
+.greenspot {
+  -webkit-background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  -o-background-size: 100% 100%;
+  background-size: 100% 100%;
+  background: #a0c814; /* Old browsers */
+  background: -moz-linear-gradient(-45deg, #d2ff52 0%, #91e842 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, #d2ff52 0%,#91e842 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, #d2ff52 0%,#91e842 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2ff52', endColorstr='#91e842',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.blackspot {
+  background: #222;
+  color: #EEE;
+}
+  

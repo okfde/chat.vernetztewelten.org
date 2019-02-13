@@ -1,6 +1,13 @@
 <template>
   <div class="home">
-    <Login :session="session" :room="room" :countries="countries"/>
+    <div class="row mt-5 justify-content-center">
+      <div class="col-md-4">
+        <h2 class="mb-5 mt-5">
+          Vernetzte Welten – Chat
+        </h2>
+        <Login :session="session" :room="room" :countries="countries"/>
+      </div>
+    </div>
   </div>
 </template>
 
