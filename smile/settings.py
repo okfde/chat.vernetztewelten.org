@@ -51,8 +51,8 @@ INSTALLED_APPS = [
 
     'django_countries',
 
-    'chat',
-    'dictionary',
+    'chat.apps.ChatConfig',
+    'dictionary.apps.DictionaryConfig',
 ]
 
 MIDDLEWARE = [

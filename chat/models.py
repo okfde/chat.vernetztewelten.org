@@ -16,6 +16,10 @@ class Room(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        verbose_name = 'Raum'
+        verbose_name_plural = 'Räume'
+
     def __str__(self):
         return self.name
 

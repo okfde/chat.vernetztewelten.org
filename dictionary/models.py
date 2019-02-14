@@ -10,5 +10,9 @@ class Dictionary(models.Model):
     meaning = models.TextField()
     country = CountryField(blank_label='(wähle dein Land)')
 
+    class Meta:
+        verbose_name = 'Wörterbuch-Eintrag'
+        verbose_name_plural = 'Wörterbücher-Einträge'
+
     def __str__(self):
         return '{} in {}'.format(self.word, self.room)
