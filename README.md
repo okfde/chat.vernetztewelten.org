@@ -1,39 +1,57 @@
-# smileapp
+# smile
 
-## Project setup
+## Local project setup
+
+Start a local Redis server.
+
+### Backend
+```
+python3 -m venv smile-env
+source smile-env/bin/activate
+pip install -r requirements-normal.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+### Frontend
 ```
 yarn install
-```
-
-### Compiles and hot-reloads for development
-```
 yarn run serve
 ```
 
-### Compiles and minifies for production
+## Local project setup with Docker
+
 ```
-yarn run build
+docker-compose -f docker-compose.dev.yml up
 ```
 
-### Run your tests
+## Deployment to Heroku
+
+Add PostgreSQL-Addon and Redis-Addon.
+
 ```
-yarn run test
+git push heroku master
+heroku config:set DEBUG=0
+heroku config:set SECRET_KEY=<long securely random string>
+heroku run python manage.py migrate
+heroku restart
 ```
 
-### Lints and fixes files
+## Deployment with Docker
+
+Copy `env.example` to `.env` and adjust values.
+
 ```
-yarn run lint
+docker-compose up --build
 ```
 
-### Run your end-to-end tests
-```
-yarn run test:e2e
-```
+The server will listen by default on port 8000.
 
-### Run your unit tests
-```
-yarn run test:unit
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Admin interface
+
+There's an admin interface at `/admin/`. You can create admin users like this:
+
+```
+python manage.py createsuperuser
+```
