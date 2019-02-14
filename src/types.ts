@@ -9,6 +9,9 @@ interface Message {
   username: string;
   message: string;
   timestamp: Date;
+  showDate: boolean;
+  showTime: boolean;
+  showUser: boolean;
 }
 
 interface EntrySubmission {

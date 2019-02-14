@@ -1,33 +1,47 @@
 <template>
   <div class="room">
-    <!-- <h1>
-      Chat room
-      <span v-if="roomName">
-      „{{ roomName }}“
-      </span>
-    </h1> -->
+    <div class="row main-row">
 
-    <div class="row">
-      <div class="col-sm-8">
-        <message-list :messages="messages"
-          :session="session"
-          @sendmessage="sendMessage"
-        ></message-list>
-      </div>
-      <div class="col-sm-4">
-        <div class="card border-warning bg-transparent mb-3" id="userlist">
+      <div class="col-sm-5 col-md-4 order-sm-12 align-self-start side-column">
+        <div class="card border-warning bg-transparent mt-3 mb-3" id="userlist">
           <div class="card-header bg-transparent border-dark">
-            Raum:
-            <span v-if="roomName">
-            <strong>{{ roomName }}</strong>
-            </span>
+            <h3 class="float-left">
+              <span v-if="roomName">
+                <strong>{{ roomName }}</strong>
+              </span>
+            </h3>
+            <div v-show="isMobile" class="float-right">
+              <button @click="showCard = 'messages'" class="emoji btn btn-outline-light mr-2"
+                :class="{'btn-warning': showMessages}">
+                <span>📝</span>
+              </button>
+              <button @click="showCard = 'dictionary'" class="emoji btn btn-outline-light mr-2"
+                :class="{'btn-warning': showDictionary}">
+                <span>📙</span>
+              </button>
+              <button @click="showCard = 'userlist'" class="emoji btn btn-outline-light"
+                :class="{'btn-warning': showUserlist}">
+                <span>👤</span>
+              </button>
+            </div>
           </div>
         </div>
-        <user-list :users="users" :session="session"></user-list>
-        <dictionary :dictionary="dictionary"
+        <user-list v-show="showUserlist" :users="users" :session="session"></user-list>
+        <dictionary v-show="showDictionary"
+          :dictionary="dictionary"
+          :isMobile="isMobile"
           @addentry="addDictionaryEntry"
         ></dictionary>
       </div>
+
+      <div v-show="showMessages" class="col-sm-7 col-md-8 order-sm-1 align-self-end">
+        <message-list :messages="messages"
+          :session="session"
+          :isMobile="isMobile"
+          @sendmessage="sendMessage"
+        ></message-list>
+      </div>
+
     </div>
   </div>
 </template>
@@ -60,6 +74,8 @@ const byTimestamp = (a: Message, b: Message) => {
   return 0;
 };
 
+const BOOTSTRAP_SM_WIDTH = 576;
+
 @Component({
   components: {
     UserList,
@@ -77,9 +93,26 @@ export default class Room extends Vue {
   private session: Session|null = null;
   private heartBeatInterval: number|undefined = undefined;
   private retryInterval: number|undefined = undefined;
+  private isMobile: boolean = true;
+  private showCard: string = 'messages';
+
+  get showUserlist() {
+    return !this.isMobile || this.showCard === 'userlist';
+  }
+  get showMessages() {
+    return !this.isMobile || this.showCard === 'messages';
+  }
+  get showDictionary() {
+    return !this.isMobile || this.showCard === 'dictionary';
+  }
 
   public mounted() {
+    this.checkWidth();
+    window.addEventListener('resize', () => {this.checkWidth(); });
     this.connectSocket();
+  }
+  public checkWidth() {
+    this.isMobile = window.innerWidth <= BOOTSTRAP_SM_WIDTH;
   }
   public connectSocket() {
     this.socket = this.createSocket();
@@ -174,3 +207,20 @@ export default class Room extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+
+.main-row {
+  height: 100vh;
+  overflow: scroll;
+}
+
+
+@media (min-width: 576px) {
+  .side-column {
+    height: 100vh;
+    overflow: scroll;
+  }
+}
+
+</style>

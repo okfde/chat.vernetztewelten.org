@@ -6,7 +6,7 @@
     </div>
     <form action="/enter" method="post" @submit="enterRoom">
       <div class="form-group">
-        <label for="id_room">Raum:</label>
+        <label for="id_room">Name des Raums:</label>
         <input v-model="roomName" type="text" name="room" required=""  maxlength="255" id="id_room" class="form-control">
       </div>
       <div class="form-group">

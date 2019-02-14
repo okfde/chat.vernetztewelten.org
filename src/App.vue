@@ -1,11 +1,13 @@
 <template>
-  <div id="app" class="blackspot">
-    <div class="container-fluid p-5">
-      <router-view
-        :session="session"
-        :room="room"
-        :countries="countries"
-      />
+  <div id="app" class="container-fluid blackspot">
+    <div class="row">
+      <div class="col-12">
+        <router-view
+          :session="session"
+          :room="room"
+          :countries="countries"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -35,7 +37,4 @@ export default class App extends Vue {
 <style lang="scss">
 @import "styles/base.scss";
 
-#app {
-  height: 100vh;
-}
 </style>
