@@ -105,9 +105,11 @@ export default class Login extends Vue {
     .then((data) => {
       if (data.error) {
         console.error(data.message);
+        this.loading = false;
         this.error = data.message;
+        return;
       }
-      router.replace(data.room);
+      router.push(data.room);
     });
   }
 }
