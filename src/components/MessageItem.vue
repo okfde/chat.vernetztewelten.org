@@ -1,14 +1,14 @@
 <template>
   <div class="message">
     <template v-if="message.showTime || message.showDate">
-      <p class="text-center text-muted">
+      <p class="text-center text-muted mb-1">
         <small v-if="message.showDate">{{ dateLabel }}</small>
         <span v-if="message.showDate && message.showTime"> - </span>
         <small v-if="message.showTime">{{ time }}</small>
       </p>
     </template>
     
-    <p class="message-paragraph">
+    <p class="message-paragraph" :title="messageTitle">
       <strong class="text-muted" :class="{'hide-username': hideUsername}">{{ message.username }}:</strong>
       {{ message.message }}
     </p>
@@ -34,6 +34,9 @@ export default class Userlist extends Vue {
 
   get isMe() {
     return this.message.username === this.session.username;
+  }
+  get messageTitle() {
+    return `${this.dateLabel} - ${this.time}`;
   }
   get date() {
     return new Date(this.message.timestamp);

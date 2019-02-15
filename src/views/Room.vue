@@ -5,21 +5,21 @@
       <div class="col-sm-5 col-md-4 order-sm-12 align-self-start side-column">
         <div class="card border-warning bg-transparent mt-3 mb-3" id="userlist">
           <div class="card-header bg-transparent border-dark">
-            <h3 class="float-left">
+            <h3 class="float-left mt-2">
               <span v-if="roomName">
                 <strong>{{ roomName }}</strong>
               </span>
             </h3>
             <div v-show="isMobile" class="float-right">
-              <button @click="showCard = 'messages'" class="emoji btn btn-outline-light mr-2"
+              <button title="Nachrichten" @click="showCard = 'messages'" class="emoji btn btn-outline-light mr-2"
                 :class="{'btn-warning': showMessages}">
                 <span>📝</span>
               </button>
-              <button @click="showCard = 'dictionary'" class="emoji btn btn-outline-light mr-2"
+              <button title="Emoji-Wörterbuch" @click="showCard = 'dictionary'" class="emoji btn btn-outline-light mr-2"
                 :class="{'btn-warning': showDictionary}">
                 <span>📙</span>
               </button>
-              <button @click="showCard = 'userlist'" class="emoji btn btn-outline-light"
+              <button title="Teilnehmer" @click="showCard = 'userlist'" class="emoji btn btn-outline-light"
                 :class="{'btn-warning': showUserlist}">
                 <span>👤</span>
               </button>

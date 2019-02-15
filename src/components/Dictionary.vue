@@ -1,23 +1,26 @@
 <template>
   <div class="card border-warning bg-transparent mb-3">
     <div class="card-header bg-warning border-warning text-dark">
-      <strong>Emoji-Wörterbuch</strong>
-      <button class="emoji download-button float-right" title="Download" @click="exportCSV">
+      <h5 class="float-left mt-2">Emoji-Wörterbuch</h5>
+      <button class="emoji download-button btn float-right" title="Download" @click="exportCSV">
         <span>⬇️</span>
       </button>
     </div>
     <div class="card-body bg-transparent">
-      <div class="form-inline mb-3">
+      <emoji-select
+        v-show="showPicker"
+        class="border border-light bg-light"
+        @emoji="word = $event ; showPicker = false"
+        :isMobile="true"
+        :defaultemoji="word">
+      </emoji-select>
+      <div v-show="!showPicker" class="form-inline mb-3">
         <div class="form-row w-100">
           <div class="col-auto col-md-auto col-sm-12 mt-2">
-            <div class="bg-light p-2 emoji-picker-container">
-              <emoji-select
-                class="relative-picker border border-light bg-light"
-                @emoji="word = $event"
-                :isMobile="true"
-                :fixed="true"
-                :defaultemoji="word">
-              </emoji-select>
+            <div @click="showPicker = !showPicker" class="bg-light p-2 emoji-picker-container">
+              <emoji-select-field
+                :defaultemoji="word"
+              ></emoji-select-field>
             </div>
           </div>
           <div class="col col-sm-12 col-md mt-2">
@@ -32,11 +35,10 @@
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-      <div class="entries">
+      <div v-show="!showPicker" class="entries">
         <dictionary-item v-for="entry in dictionary"
           :entry="entry" :key="entry.id"
         ></dictionary-item>
@@ -49,7 +51,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import EmojiSelect from './EmojiSelect.vue';
-
+import EmojiSelectField from './EmojiSelectField.vue';
 import DictionaryItem from './DictionaryItem.vue';
 
 import {FLAGS} from '../data/emojiflags';
@@ -76,6 +78,7 @@ const processRow = (row: string[]) => {
   components: {
     DictionaryItem,
     EmojiSelect,
+    EmojiSelectField,
   },
 })
 export default class Dictionary extends Vue {
@@ -84,6 +87,7 @@ export default class Dictionary extends Vue {
 
   private word = '';
   private meaning = '';
+  private showPicker = false;
 
   private addEntry() {
     if (this.word === '') {
@@ -130,9 +134,6 @@ export default class Dictionary extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.emoji-picker-container {
-  position: relative;
-}
 
 .entries {
   max-height: 30vh;
@@ -141,4 +142,5 @@ export default class Dictionary extends Vue {
 .download-button {
   cursor: pointer;
 }
+
 </style>

@@ -67,16 +67,11 @@ a:hover {
   color: #EEE;
 }
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2), not all, not all, not all, only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-  /* 
-    Center emoji on Retina
-    https://stackoverflow.com/questions/44142464/how-do-i-horizontally-center-an-emoji
-  */
+@media only screen and (min-device-pixel-ratio: 2) {
   .emoji {
-    font-size: 1.1em;
     span {
       display: inline-block;
-      margin-right: -0.3em;
+      letter-spacing: -0.34em;
     }
   }
 }

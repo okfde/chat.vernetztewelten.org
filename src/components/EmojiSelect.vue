@@ -1,14 +1,6 @@
 <template>
   <div>
-    <div @click="showPicker = !showPicker" class="emoji-picker emoji">
-      <svg v-if="!defaultemoji" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0h24v24H0z" fill="none"/>
-        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
-      </svg>
-      <span v-else>{{ defaultemoji }}</span>
-    </div>
     <picker
-      v-show="showPicker"
       title=""
       :perLine="perLine"
       :native="true"
@@ -54,7 +46,6 @@ export default class EmojiSelect extends Vue {
   @Prop(Boolean) public isMobile!: boolean;
   @Prop(Boolean) public fixed: boolean;
 
-  private showPicker = false;
   private i18n = {
     search: 'Suchen',
     notfound: 'Kein Emoji gefunden',
@@ -72,31 +63,36 @@ export default class EmojiSelect extends Vue {
       custom: 'Eigene',
     },
   };
+  private width = 1024;
+
+  public mounted() {
+    this.calculateWidth();
+    window.addEventListener('orientationchange', this.calculateWidth);
+    window.addEventListener('resize', this.calculateWidth);
+  }
+  public calculateWidth() {
+    this.width = window.innerWidth;
+  }
+
   get perLine() {
-    if (this.isMobile) {
+    if (this.width > 1200) {
+      return 9;
+    } else if (this.width > 992) {
       return 7;
+    } else if (this.width > 576) {
+      return 6;
+    } else if (this.width < 400) {
+      return 6;
     }
     return 9;
   }
   get style() {
-    if (this.fixed) {
-      return {
-        position: 'fixed',
-        bottom: '40px',
-        left: '15px',
-        zIndex: '1000',
-      };
-    }
     return {
-      position: 'absolute',
-      bottom: '40px',
-      left: '0px',
-      zIndex: '1000',
+      margin: 'auto',
     };
   }
 
   private insert(emoji: Emoji) {
-    this.showPicker = false;
     this.$emit('emoji', emoji.native);
   }
 }
@@ -109,8 +105,7 @@ export default class EmojiSelect extends Vue {
 .emoji-mart-emoji > span {
   cursor: pointer;
 }
-.emoji-picker {
-  cursor: pointer;
-  text-align: center;
+.emoji-mart-preview {
+  height: 36px !important;
 }
 </style>

@@ -14,13 +14,17 @@
         aria-describedby="send-button"
         @keyup.enter="submitMessage"
       >
-      <div class="input-group-append ">
+      <div class="input-group-append relative-container">
         <emoji-select
-          class="relative-picker border border-light p-1 pl-2 pr-2 bg-light"
-          :isMobile="isMobile"
-          :fixed="false"
-          @emoji="message += $event">
+          v-show="showPicker"
+          class="absolute-picker"
+          @emoji="message += $event ; showPicker = false">
         </emoji-select>
+        <div @click="showPicker = !showPicker"
+          class="bg-light p-1">
+          <emoji-select-field
+          ></emoji-select-field>
+        </div>
       </div>
       <div class="input-group-append">
         <button
@@ -38,8 +42,8 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
 import MessageItem from './MessageItem.vue';
-
 import EmojiSelect from './EmojiSelect.vue';
+import EmojiSelectField from './EmojiSelectField.vue';
 
 import {Message, Session} from '../types';
 
@@ -49,6 +53,7 @@ const TIME_THRESHOLD = 1000 * 60 * 5;
   components: {
     MessageItem,
     EmojiSelect,
+    EmojiSelectField,
   },
 })
 export default class MessageList extends Vue {
@@ -56,6 +61,7 @@ export default class MessageList extends Vue {
   @Prop(Object) public session!: Session;
   @Prop(Boolean) public isMobile!: boolean;
   private message = '';
+  private showPicker = false;
 
   public mounted() {
     this.triggerScoll();
@@ -129,10 +135,13 @@ export default class MessageList extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.message-list {
-  max-height: 65vh;
-  overflow: scroll;
-}
+  .message-container {
+    max-height: calc(100vh - 120px);
+  }
+  .message-list {
+    max-height: calc(100vh - 190px);
+    overflow: scroll;
+  }
 @media (min-width: 576px) {
   .message-container {
     max-height: 100vh;
@@ -140,5 +149,14 @@ export default class MessageList extends Vue {
   .message-list {
     max-height: calc(100vh - 70px);
   }
+}
+.relative-container {
+  position: relative;
+}
+.absolute-picker {
+  position: fixed;
+  bottom: 60px;
+  left: 15px;
+  z-index: 1000;
 }
 </style>

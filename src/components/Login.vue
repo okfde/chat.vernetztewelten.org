@@ -1,30 +1,39 @@
 <template>
   <div class="login">
-    <h3>Betrete einen Raum</h3>
-    <div v-if="error" class="alert alert-danger">
-      {{ error }}
-    </div>
-    <form action="/enter" method="post" @submit="enterRoom">
-      <div class="form-group">
-        <label for="id_room">Name des Raums:</label>
-        <input v-model="roomName" type="text" name="room" required=""  maxlength="255" id="id_room" class="form-control">
+    <div v-if="loading" class="text-center">
+      <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
       </div>
-      <div class="form-group">
-        <label for="id_username">Dein Nutzername:</label>
-        <input v-model="username" type="text" name="username" maxlength="255" required="" id="id_username" class="form-control">
-      </div>
-      <div class="form-group">
-        <label for="id_country">Dein Land:</label>
-        <select v-model="country" name="country" required="" id="id_country" class="form-control">
-          <option v-for="countryLabel in countries" :key="countryLabel[0]" :value="countryLabel[0]">
-            {{ countryLabel[1] }}
-          </option>
-        </select>
-      </div>
-      <p class="text-right">
-        <button class="btn btn-primary" type="submit">Eintreten</button>
+      <p class="lead">
+        Raum „{{ roomName }}“ wird geladen...
       </p>
-    </form>
+    </div>
+    <div v-else>
+      <h3>Betrete einen Raum</h3>
+      <div v-if="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+      <form action="/enter" method="post" @submit="enterRoom">
+        <div class="form-group">
+          <label for="id_room">Name des Raums:</label>
+          <input v-model="roomName" type="text" name="room" required=""  maxlength="255" id="id_room" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="id_username">Dein Nutzername:</label>
+          <input v-model="username" type="text" name="username" maxlength="255" required="" id="id_username" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="id_country">Dein Land:</label>
+          <select v-model="country" name="country" required="" id="id_country" class="form-control">
+            <option v-for="countryLabel in countryList" :key="countryLabel[0]" :value="countryLabel[0]">
+              {{ countryLabel[1] }}
+            </option>
+          </select>
+        </div>
+        <p class="text-right">
+          <button class="btn btn-lg btn-primary" type="submit">Eintreten</button>
+        </p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -33,6 +42,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import router from '../router';
 
+import {FLAGS} from '../data/emojiflags';
 import {Room, Session} from '../types';
 
 @Component
@@ -44,6 +54,7 @@ export default class Login extends Vue {
   private roomName = '';
   private country = '';
   private error = '';
+  private loading = false;
 
   public mounted() {
     if (this.room !== null) {
@@ -53,6 +64,16 @@ export default class Login extends Vue {
       this.username = this.session.username;
       this.country = this.session.country;
     }
+  }
+
+  get countryList(): string[][] {
+    return this.countries.map((countryLabel) => {
+      const flag = FLAGS[countryLabel[0]];
+      if (flag) {
+        return [countryLabel[0], `${countryLabel[1]} ${flag}`];
+      }
+      return countryLabel;
+    });
   }
 
   get csrfToken(): string {
@@ -65,6 +86,7 @@ export default class Login extends Vue {
 
   private enterRoom(e: Event) {
     e.preventDefault();
+    this.loading = true;
     this.error = '';
     window.fetch('/enter/', {
       method: 'POST',
