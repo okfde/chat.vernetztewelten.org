@@ -1,8 +1,11 @@
+import dateutil.parser
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .api import (
     get_room, get_room_info, update_presence, remove_presence,
-    add_message, get_userlist, add_dictionary_entry
+    add_message, get_userlist, add_dictionary_entry,
+    get_message_list
 )
 
 
@@ -78,37 +81,63 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             return
 
         if content['type'] == 'hearbeat':
+            await update_presence(
+                self.user['username'], self.room,
+                country=self.user['country']
+            )
+            return
+
+        if content['type'] == 'list_messages':
+            await self.list_messages(content)
             return
 
         if content['type'] == 'message':
-            message = await add_message(
-                self.user['username'],
-                self.room,
-                content['message']
-            )
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': message,
-                }
-            )
+            await self.add_message(content)
 
         if content['type'] == 'dictionary_entry':
-            dictionary = await add_dictionary_entry(
-                self.room,
-                self.user['country'],
-                content['entry'].get('word', ''),
-                content['entry'].get('meaning', ''),
-            )
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'dictionary_entry',
-                    'dictionary': dictionary,
-                }
-            )
+            await self.add_dictionary_entry(content)
+            return
+
+    async def list_messages(self, content):
+        try:
+            before_date = dateutil.parser.parse(content['before'])
+        except ValueError:
+            return
+
+        messages = await get_message_list(self.room, before_date)
+        await self.send_json({
+            'moremessages': messages
+        })
+
+    async def add_message(self, content):
+        message = await add_message(
+            self.user['username'],
+            self.room,
+            content['message']
+        )
+        # Send message to room group
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message,
+            }
+        )
+
+    async def add_dictionary_entry(self, content):
+        dictionary = await add_dictionary_entry(
+            self.room,
+            self.user['country'],
+            content['entry'].get('word', ''),
+            content['entry'].get('meaning', ''),
+        )
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'dictionary_entry',
+                'dictionary': dictionary,
+            }
+        )
 
     async def chat_message(self, event):
         message = event['message']

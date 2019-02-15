@@ -1,6 +1,11 @@
 <template>
   <div class="message-container">
     <div class="message-list" ref="messages">
+      <p v-if="showGetMore" class="text-muted text-center">
+        <a href="#" @click.prevent="getMoreMessages">
+          Mehr Nachrichten laden
+        </a>
+      </p>
       <MessageItem v-for="message in messageList" :key="message.id"
         :message="message"
         :session="session"
@@ -58,8 +63,9 @@ const TIME_THRESHOLD = 1000 * 60 * 5;
 })
 export default class MessageList extends Vue {
   @Prop(Array) public messages!: Message[];
+  @Prop(Boolean) public hasMore: boolean;
   @Prop(Object) public session!: Session;
-  @Prop(Boolean) public isMobile!: boolean;
+
   private message = '';
   private showPicker = false;
 
@@ -102,6 +108,10 @@ export default class MessageList extends Vue {
     });
   }
 
+  get showGetMore() {
+    return this.hasMore !== false && this.messages.length > 0;
+  }
+
   @Watch('messages')
   private onMessagesChanged(val: Message[], oldVal: Message[]) {
     this.triggerScoll();
@@ -120,6 +130,10 @@ export default class MessageList extends Vue {
     window.setTimeout(() => {
       this.showLatestMessage();
     }, 250);
+  }
+
+  private getMoreMessages() {
+    this.$emit('moremessages');
   }
 
   private showLatestMessage() {
@@ -141,6 +155,7 @@ export default class MessageList extends Vue {
   .message-list {
     max-height: calc(100vh - 190px);
     overflow: scroll;
+    -webkit-overflow-scrolling: touch;
   }
 @media (min-width: 576px) {
   .message-container {

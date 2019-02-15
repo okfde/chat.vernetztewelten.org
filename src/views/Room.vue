@@ -29,7 +29,7 @@
         <user-list v-show="showUserlist" :users="users" :session="session"></user-list>
         <dictionary v-show="showDictionary"
           :dictionary="dictionary"
-          :isMobile="isMobile"
+          :countries="countries"
           @addentry="addDictionaryEntry"
         ></dictionary>
       </div>
@@ -37,8 +37,9 @@
       <div v-show="showMessages" class="col-sm-7 col-md-8 order-sm-1 align-self-end">
         <message-list :messages="messages"
           :session="session"
-          :isMobile="isMobile"
+          :has-more="hasMoreMessages"
           @sendmessage="sendMessage"
+          @moremessages="getMoreMessages"
         ></message-list>
       </div>
 
@@ -61,11 +62,19 @@ import {
 
 interface WebSocketUpdate {
   messages: Message[] | undefined;
+  moremessages: Message[] | undefined;
   name: string | undefined;
   userlist: Session[] | undefined;
   user: UserChanged | undefined;
   session: Session | undefined;
   dictionary: DictionaryEntry[] | undefined;
+}
+
+interface WebSocketMessage {
+  type: string;
+  message?: string;
+  entry?: EntrySubmission;
+  before?: string;
 }
 
 const byTimestamp = (a: Message, b: Message) => {
@@ -85,6 +94,7 @@ const BOOTSTRAP_SM_WIDTH = 576;
 })
 export default class Room extends Vue {
   @Prop(String) public roomUid!: string;
+  @Prop(Array) public countries: string[][];
   private socket: WebSocket | null = null;
   private messages: Message[] = [];
   private users: Session[] = [];
@@ -95,6 +105,7 @@ export default class Room extends Vue {
   private retryInterval: number|undefined = undefined;
   private isMobile: boolean = true;
   private showCard: string = 'messages';
+  private hasMoreMessages: boolean|null = null;
 
   get showUserlist() {
     return !this.isMobile || this.showCard === 'userlist';
@@ -136,6 +147,14 @@ export default class Room extends Vue {
 
       if (data.messages) {
         this.messages = this.mergeMessages(data.messages);
+      }
+      if (data.moremessages !== undefined) {
+        if (data.moremessages.length === 0) {
+          this.hasMoreMessages = false;
+        } else {
+          this.hasMoreMessages = true;
+          this.messages = this.mergeMessages(data.moremessages);
+        }
       }
       if (data.userlist) {
         this.users = data.userlist;
@@ -181,29 +200,31 @@ export default class Room extends Vue {
     return new WebSocket(
       `${prot}://${window.location.host}/ws/chat/${this.roomUid}/`);
   }
-  public sendMessage(message: string) {
+  public useSocket(message: WebSocketMessage) {
     if (this.socket === null) {
       this.connectSocket();
     }
     if (this.socket !== null) {
-      this.socket.send(
-        JSON.stringify({
-          type: 'message',
-          message,
-        }));
+      this.socket.send(JSON.stringify(message));
     }
   }
+  public sendMessage(message: string) {
+    this.useSocket({
+      type: 'message',
+      message,
+    });
+  }
+  public getMoreMessages() {
+    this.useSocket({
+      type: 'list_messages',
+      before: this.messages[0].timestamp,
+    });
+  }
   public addDictionaryEntry(entry: EntrySubmission) {
-    if (this.socket === null) {
-      this.connectSocket();
-    }
-    if (this.socket !== null) {
-      this.socket.send(
-        JSON.stringify({
-          type: 'dictionary_entry',
-          entry,
-        }));
-    }
+    this.useSocket({
+      type: 'dictionary_entry',
+      entry,
+    });
   }
 }
 </script>

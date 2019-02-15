@@ -7,6 +7,8 @@ from dictionary.serializers import DictionarySerializer
 from .models import Room, Message, Presence
 from .serializers import RoomSerializer, MessageSerializer
 
+MESSAGE_COUNT = 50
+
 
 @database_sync_to_async
 def get_room(room_uid):
@@ -20,7 +22,7 @@ def get_room(room_uid):
 def get_room_info(room_uid=None, room=None):
     if room is None:
         room = Room.objects.get(uuid=room_uid)
-    messages = Message.objects.filter(room=room)[:50]
+    messages = Message.objects.filter(room=room)[:MESSAGE_COUNT]
     userlist = _get_userlist(room)
     return RoomSerializer({
         'name': room.name,
@@ -28,6 +30,15 @@ def get_room_info(room_uid=None, room=None):
         'userlist': userlist,
         'dictionary': _get_dictionary(room)
     }).data
+
+
+@database_sync_to_async
+def get_message_list(room, before_date):
+    messages = Message.objects.filter(
+        room=room,
+        timestamp__lt=before_date
+    )[:MESSAGE_COUNT]
+    return MessageSerializer(messages, many=True).data
 
 
 @database_sync_to_async

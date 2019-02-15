@@ -8,7 +8,7 @@ interface Message {
   id: number;
   username: string;
   message: string;
-  timestamp: Date;
+  timestamp: string;
   showDate: boolean;
   showTime: boolean;
   showUser: boolean;
