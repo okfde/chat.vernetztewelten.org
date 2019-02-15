@@ -26,10 +26,14 @@
             </div>
           </div>
         </div>
-        <user-list v-show="showUserlist" :users="users" :session="session"></user-list>
+        <user-list v-show="showUserlist"
+          :users="users"
+          :session="session"
+          :countries="countryMap"
+        ></user-list>
         <dictionary v-show="showDictionary"
           :dictionary="dictionary"
-          :countries="countries"
+          :countries="countryMap"
           @addentry="addDictionaryEntry"
         ></dictionary>
       </div>
@@ -115,6 +119,14 @@ export default class Room extends Vue {
   }
   get showDictionary() {
     return !this.isMobile || this.showCard === 'dictionary';
+  }
+
+  get countryMap() {
+    const countryMap: {[key: string]: string} = {};
+    this.countries.forEach((cl) => {
+      countryMap[cl[0]] = cl[1];
+    });
+    return countryMap;
   }
 
   public mounted() {

@@ -82,23 +82,15 @@ const processRow = (row: string[]) => {
 })
 export default class Dictionary extends Vue {
   @Prop(Array) public dictionary!: DictionaryEntry[];
-  @Prop(Array) public countries: string[][];
+  @Prop(Object) public countries: {[key: string]: string};
 
   private word = '';
   private meaning = '';
   private showPicker = false;
 
-  get countryMap() {
-    const countryMap: {[key: string]: string} = {};
-    this.countries.forEach((cl) => {
-      countryMap[cl[0]] = cl[1];
-    });
-    return countryMap;
-  }
-
   get enhancedDictionary() {
     return this.dictionary.map((entry) => {
-      entry.countryName = this.countryMap[entry.country] || '';
+      entry.countryName = this.countries[entry.country] || '';
       return entry;
     });
   }

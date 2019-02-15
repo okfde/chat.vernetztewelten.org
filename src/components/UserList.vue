@@ -4,7 +4,7 @@
       {{ userCount }} Teilnehmer
     </div>
     <div class="card-body text-light border-dark">
-      <template v-for="user in users">
+      <template v-for="user in userList">
         <user-item :user="user" :session="session" :key="user.username"/>
       </template>
     </div>
@@ -28,6 +28,14 @@ import {Session} from '../types';
 export default class UserList extends Vue {
   @Prop(Array) public users!: Session[];
   @Prop(Object) public session!: Session;
+  @Prop(Object) public countries: {[key: string]: string};
+
+  get userList() {
+    return this.users.map((user) => {
+      user.countryName = this.countries[user.country] || '';
+      return user;
+    });
+  }
 
   get userCount() {
     return this.users.length;

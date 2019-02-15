@@ -1,6 +1,6 @@
 <template>
   <div class="media" :class="{'bg-dark': itsMe}">
-    <div class="mr-1 p-1">
+    <div class="mr-1 p-1 emoji-flag" :title="user.countryName">
       {{ emojiFlag }}
     </div>
     <div class="media-body p-1">
@@ -29,3 +29,9 @@ export default class UserItem extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .emoji-flag {
+    cursor: help;
+  }
+</style>
