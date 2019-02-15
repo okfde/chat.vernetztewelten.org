@@ -3,6 +3,7 @@ channels
 channels_redis
 django-countries
 djangorestframework
+python-dateutil
 emoji
 uvicorn
 dj-database-url
