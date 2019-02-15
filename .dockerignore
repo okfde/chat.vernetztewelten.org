@@ -4,3 +4,4 @@ docker-compose.*
 .*
 db.sqlite3
 node_modules/
+static_root/
