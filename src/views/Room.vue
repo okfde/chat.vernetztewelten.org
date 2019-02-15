@@ -87,6 +87,7 @@ const byTimestamp = (a: Message, b: Message) => {
   return 0;
 };
 
+const MAX_MESSAGE_COUNT = 50; // Synchronize with api.py
 const BOOTSTRAP_SM_WIDTH = 576;
 
 @Component({
@@ -159,14 +160,17 @@ export default class Room extends Vue {
 
       if (data.messages) {
         this.messages = this.mergeMessages(data.messages);
+        if (this.hasMoreMessages === null && data.messages.length < MAX_MESSAGE_COUNT) {
+          this.hasMoreMessages = false;
+        }
       }
       if (data.moremessages !== undefined) {
-        if (data.moremessages.length === 0) {
+        if (data.moremessages.length < MAX_MESSAGE_COUNT) {
           this.hasMoreMessages = false;
         } else {
           this.hasMoreMessages = true;
-          this.messages = this.mergeMessages(data.moremessages);
         }
+        this.messages = this.mergeMessages(data.moremessages);
       }
       if (data.userlist) {
         this.users = data.userlist;

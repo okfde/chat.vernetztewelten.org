@@ -22,12 +22,13 @@ interface EntrySubmission {
 interface DictionaryEntry extends EntrySubmission {
   id: number;
   country: string;
-  countryName: string;
+  countryName?: string;
 }
 
 interface Session {
   username: string;
   country: string;
+  countryName?: string;
 }
 
 interface UserChanged extends Session {

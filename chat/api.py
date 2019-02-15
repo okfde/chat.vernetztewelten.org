@@ -7,6 +7,7 @@ from dictionary.serializers import DictionarySerializer
 from .models import Room, Message, Presence
 from .serializers import RoomSerializer, MessageSerializer
 
+# Synchronize with Room.vue
 MESSAGE_COUNT = 50
 
 

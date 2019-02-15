@@ -3,7 +3,7 @@
     <div class="message-list" ref="messages">
       <p v-if="showGetMore" class="text-muted text-center">
         <a href="#" @click.prevent="getMoreMessages">
-          Mehr Nachrichten laden
+          <small>Mehr Nachrichten laden</small>
         </a>
       </p>
       <MessageItem v-for="message in messageList" :key="message.id"
@@ -14,6 +14,7 @@
 
     <div class="input-group mb-3 mt-3">
       <input v-model="message" type="text" class="form-control"
+        ref="input"
         placeholder="Deine Nachricht"
         aria-label="Deine Nachricht"
         aria-describedby="send-button"
@@ -23,7 +24,7 @@
         <emoji-select
           v-show="showPicker"
           class="absolute-picker"
-          @emoji="message += $event ; showPicker = false">
+          @emoji="addEmoji">
         </emoji-select>
         <div @click="showPicker = !showPicker"
           class="bg-light p-1">
@@ -124,6 +125,20 @@ export default class MessageList extends Vue {
     this.$emit('sendmessage', this.message);
     this.message = '';
     this.triggerScoll();
+    this.focusInput();
+  }
+
+  private addEmoji(emoji: string) {
+    this.message += emoji;
+    this.showPicker = false;
+    this.focusInput();
+  }
+
+  private focusInput() {
+    const input = this.$refs.input;
+    if (input instanceof HTMLInputElement) {
+      input.focus();
+    }
   }
 
   private triggerScoll() {
