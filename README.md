@@ -55,3 +55,12 @@ There's an admin interface at `/admin/`. You can create admin users like this:
 ```
 python manage.py createsuperuser
 ```
+
+## Delete messages older than 24h
+
+Messages older than 24h are not visible, but are still in the database.
+To delete them, either click the button in the message admin interface or periodically run this command (e.g. with a cron job):
+
+```
+python manage.py delete_old_messages
+```

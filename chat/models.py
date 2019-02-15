@@ -9,6 +9,7 @@ from django.utils import timezone
 from django_countries.fields import CountryField
 
 MAX_AGE = timedelta(seconds=60)
+MESSAGE_MAX_AGE = timedelta(hours=24)
 
 
 class Room(models.Model):
@@ -19,6 +20,7 @@ class Room(models.Model):
     class Meta:
         verbose_name = 'Raum'
         verbose_name_plural = 'Räume'
+        ordering = ('-created',)
 
     def __str__(self):
         return self.name
@@ -79,10 +81,13 @@ class Presence(models.Model):
             self.username, self.room, self.last_seen
         )
 
-    def get_context(self):
-        if not self.context:
-            return {}
-        return json.loads(self.context)
+
+class MessageManager(models.Manager):
+    def get_queryset(self):
+        day_ago = timezone.now() - MESSAGE_MAX_AGE
+        return super().get_queryset().filter(
+            timestamp__gte=day_ago
+        )
 
 
 class Message(models.Model):
@@ -91,10 +96,22 @@ class Message(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     message = models.TextField()
 
+    all_objects = models.Manager()
+    objects = MessageManager()
+
     class Meta:
+        verbose_name = 'Nachricht'
+        verbose_name_plural = 'Nachrichten'
         ordering = ('-timestamp',)
 
     def __str__(self):
         return '{} in {} um {}'.format(
             self.username, self.room, self.timestamp
         )
+
+
+def delete_old_messages():
+    before = timezone.now() - MESSAGE_MAX_AGE
+    return Message.all_objects.filter(
+        timestamp__lt=before
+    ).delete()
