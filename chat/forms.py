@@ -34,7 +34,9 @@ class EnterRoomForm(forms.Form):
             return self._room
         room_name = self.cleaned_data['room']
         self._room, created = Room.objects.get_or_create(
-            name=room_name
+            name__iexact=room_name, defaults={
+                'name': room_name
+            }
         )
         self.room_created = created
         return self._room
