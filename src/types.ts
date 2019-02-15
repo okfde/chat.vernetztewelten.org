@@ -22,6 +22,7 @@ interface EntrySubmission {
 interface DictionaryEntry extends EntrySubmission {
   id: number;
   country: string;
+  countryName: string;
 }
 
 interface Session {

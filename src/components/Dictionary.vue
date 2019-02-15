@@ -11,7 +11,6 @@
         v-show="showPicker"
         class="border border-light bg-light"
         @emoji="word = $event ; showPicker = false"
-        :isMobile="true"
         :defaultemoji="word">
       </emoji-select>
       <div v-show="!showPicker" class="form-inline mb-3">
@@ -39,7 +38,7 @@
         </div>
       </div>
       <div v-show="!showPicker" class="entries">
-        <dictionary-item v-for="entry in dictionary"
+        <dictionary-item v-for="entry in enhancedDictionary"
           :entry="entry" :key="entry.id"
         ></dictionary-item>
       </div>
@@ -83,11 +82,26 @@ const processRow = (row: string[]) => {
 })
 export default class Dictionary extends Vue {
   @Prop(Array) public dictionary!: DictionaryEntry[];
-  @Prop(Boolean) public isMobile!: boolean;
+  @Prop(Array) public countries: string[][];
 
   private word = '';
   private meaning = '';
   private showPicker = false;
+
+  get countryMap() {
+    const countryMap: {[key: string]: string} = {};
+    this.countries.forEach((cl) => {
+      countryMap[cl[0]] = cl[1];
+    });
+    return countryMap;
+  }
+
+  get enhancedDictionary() {
+    return this.dictionary.map((entry) => {
+      entry.countryName = this.countryMap[entry.country] || '';
+      return entry;
+    });
+  }
 
   private addEntry() {
     if (this.word === '') {
@@ -134,10 +148,6 @@ export default class Dictionary extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
-.entries {
-  max-height: 30vh;
-}
 
 .download-button {
   cursor: pointer;

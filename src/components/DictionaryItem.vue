@@ -5,7 +5,9 @@
     </div>
     <div class="media-body pt-1">
       {{ entry.meaning}}
-      <span class="float-right">{{ emojiFlag }}</span>
+      <span class="float-right emoji-flag" :title="entry.countryName">
+        {{ emojiFlag }}
+      </span>
     </div>
   </div>
 </template>
@@ -26,3 +28,9 @@ export default class DictionaryItem extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .emoji-flag {
+    cursor: help;
+  }
+</style>

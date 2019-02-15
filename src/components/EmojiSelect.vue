@@ -43,8 +43,6 @@ interface Emoji {
 })
 export default class EmojiSelect extends Vue {
   @Prop({type: String, default: ''}) public defaultemoji!: string|null;
-  @Prop(Boolean) public isMobile!: boolean;
-  @Prop(Boolean) public fixed: boolean;
 
   private i18n = {
     search: 'Suchen',

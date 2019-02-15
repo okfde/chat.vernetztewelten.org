@@ -38,29 +38,10 @@ html {
   scroll-behavior: smooth;
 }
 
-a:hover {
-  color: #111;
+a, a:hover {
+  color: #fff;
 }
 
-
-/*! --- */
-
-.big {
-  font-size: 7.5vw;
-  line-height: 1.1;
-  font-weight: 700;
-  color: black;
-}
-
-.my-primary {
-  color: black;
-  background-color: #a0c814;
-}
-
-.my-primary:focus, .my-primary:hover {
-  color: white;
-  background-color: #374105;
-}
 
 .blackspot {
   background: #222;
