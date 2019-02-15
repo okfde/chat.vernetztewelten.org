@@ -20,7 +20,10 @@ class EnterRoomForm(forms.Form):
         is_present = Presence.objects.is_present(username, room)
         if is_present:
             session = self.session.get(room.room_key, {})
-            if session.get('username') != username:
+            session_username = session.get('username')
+            if session_username is None:
+                raise forms.ValidationError('Username schon im Raum')
+            if session_username.lower() != username.lower():
                 raise forms.ValidationError('Username schon im Raum')
 
     def save(self):

@@ -47,7 +47,9 @@ class PresenceManager(models.Manager):
         )
 
     def is_present(self, username, room):
-        return self.get_present(room).filter(username=username).exists()
+        return self.get_present(room).filter(
+            username__iexact=username
+        ).exists()
 
     def list_users(self, room):
         return self.get_present(room).values('username', 'country')
