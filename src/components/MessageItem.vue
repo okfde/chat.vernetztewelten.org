@@ -47,7 +47,7 @@ export default class Userlist extends Vue {
     return `${hours}:${mins}`;
   }
   get dateLabel() {
-    return `${pad('' + this.date.getDate())}.${pad('' + this.date.getMonth())}.${this.date.getFullYear()}`;
+    return `${pad('' + this.date.getDate())}.${pad('' + (this.date.getMonth() + 1))}.${this.date.getFullYear()}`;
   }
   get hideUsername() {
     return !this.message.showUser && !(this.message.showDate || this.message.showTime);
