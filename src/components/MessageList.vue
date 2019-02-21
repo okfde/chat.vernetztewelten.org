@@ -169,7 +169,8 @@ export default class MessageList extends Vue {
   }
   .message-list {
     max-height: calc(100vh - 190px);
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 @media (min-width: 576px) {

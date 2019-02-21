@@ -249,14 +249,16 @@ export default class Room extends Vue {
 
 .main-row {
   height: 100vh;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 
 @media (min-width: 576px) {
   .side-column {
     height: 100vh;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 

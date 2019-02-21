@@ -40,7 +40,8 @@ export default class Home extends Vue {}
 
 .main-row {
   height: 100vh;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 </style>

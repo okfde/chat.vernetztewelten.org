@@ -46,6 +46,7 @@ export default class UserList extends Vue {
 <style lang="scss" scoped>
 #userlist {
   max-height: 50%;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>
