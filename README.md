@@ -19,6 +19,13 @@ yarn install
 yarn run serve
 ```
 
+Build frontend files
+
+```
+yarn run build
+```
+
+
 ## Local project setup with Docker
 
 ```
