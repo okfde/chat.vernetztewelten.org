@@ -80,7 +80,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if not self.user:
             return
 
-        if content['type'] == 'hearbeat':
+        if content['type'] == 'heartbeat':
             await update_presence(
                 self.user['username'], self.room,
                 country=self.user['country']
